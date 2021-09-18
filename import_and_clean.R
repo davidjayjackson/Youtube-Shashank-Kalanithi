@@ -4,21 +4,34 @@ df <- read_csv("./data_cleaning_challenge.csv")
 df <- janitor::clean_names(df)
 names(df)
 df <- df %>% janitor::remove_empty(c("cols","rows"))
-dat <- df %>% filter(row_type !="first name: Person")
-dat1 <- dat %>% filter(row_type !="Row Type")
-dat2 <- dat1 %>% filter(row_type !="Average" , row_type!="Maximum" ,
-                          row_type !="Std.Dev." , row_type != "Total")
-dat2$first_name <- "Bob"
-dat2$last_name <- "Smith"
-dat2$Ymd <- "1955-05-13"
-dat2$Ymd <- as.Date(dat2$Ymd)
-dat2$index1 <- row.names(dat2)
-dat2$index1 <- as.numeric(dat2$index1)
-summary(dat2$index1)
-dat2$Date <- seq(as.Date("1959/8/2"), as.Date("2020/12/31"), "day")
+df <- df %>% filter(row_type !="first name: Person")
+df <- df %>% filter(row_type !="Row Type")
+
+df <- df %>% filter(!row_type %in% c("Average","Maximum",
+                        "Std.Dev.","Total"))
+                        
+df$first_name <- "Bob"
+df$last_name <- "Smith"
+df$index1 <- row.names(df)
+df$index1 <- as.numeric(df$index1)
+summary(df$index1)
+
+## Each set consist of 5 different sets (iter_numbers)
+## Thanks to Burak Can Koc @ Slack for this code.
+# dat2$Date <- seq(as.Date("1959/8/2"), as.Date("2020/12/31"), "day")
+
+date_seq <- rep(seq(as.Date("2008/9/17"), as.Date("2020/12/30"), "day"), each = 5)
+date_seq <- as.data.frame(date_seq)
+date_seq$rowid <- row.names(date_seq)
+date_seq$rowid <- as.numeric(date_seq$rowid)
+row_boats <- date_seq %>% filter(rowid <=22433)
+
 ## Rearrange Columns
-db <- dat2 %>% select(index1,first_name,last_name,Date,row_type,iter_number,
+df <- df %>% select(index1,first_name,last_name,row_type,iter_number,
                       power1,speed1,speed2,electricity:torque)
+
+boats <- cbind(row_boats,df)
+
 
 ### Convert to numeric
 db$iter_number <- as.numeric(db$iter_number)
