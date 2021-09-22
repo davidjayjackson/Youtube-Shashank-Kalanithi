@@ -1,0 +1,66 @@
+---
+title: "Survey Monkey Data Cleaning"
+author: "David Jackson"
+date: "9/21/2021"
+output: 
+  html_document: 
+    fig_width: 9
+    fig_height: 6
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(scales)
+library(readxl)
+library(writexl)
+
+```
+
+## R Markdown
+
+```{r}
+rm(list = ls())
+data_import <- read_excel("./Data - Survey Monkey Output Edited.xlsx" , sheet = "Edited_Data")
+
+data_import <- janitor::clean_names(data_import)
+data_import$start_date <- as.Date(data_import$start_date)
+data_import$end_date <- as.Date(data_import$end_date)
+
+dataset_modified <- data_import %>% select(-start_date, -end_date, -email_address, -first_name, -last_name, -custom_data_1)
+
+```
+
+
+### Pivot on respondent_id
+
+```{r}
+dataset_longer <- dataset_modified %>%
+  pivot_longer(cols=identify_which_division_you_work_in_response:question_30_response_3,names_to = "Questions", values_to  ="Answers") %>% na.omit()
+```
+
+## Plotof employees by division
+
+```{r}
+dataset_longer %>% filter(Questions =="identify_which_division_you_work_in_response") %>%
+ count(Answers,sort = TRUE) %>% ggplot() + geom_col(aes(x=Answers,y=n)) +
+  coord_flip()
+```
+
+## Count and Plot Number of Respondents by Question
+
+```{r}
+dataset_longer %>% filter(!grepl('question',Questions)) %>% count(Questions,sort = TRUE) %>%
+  ggplot() + geom_col(aes(x=Questions,y=n)) + coord_flip() +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2))
+```
+
+
+```{r}
+dataset_longer %>% filter(Questions =="which_generation_are_you_apart_of_response") %>% count(Answers,sort = TRUE) %>%
+  ggplot() + geom_col(aes(x=reorder(Answers,n),y=n)) +
+  coord_flip() + labs(title = "Employee Count by Generation",
+                      x="Generation",y="Count of Employees") +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2))
+```
+
