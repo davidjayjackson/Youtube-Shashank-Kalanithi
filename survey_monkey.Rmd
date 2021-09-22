@@ -44,7 +44,7 @@ dataset_longer <- dataset_modified %>%
 ```{r}
 dataset_longer %>% filter(Questions =="identify_which_division_you_work_in_response") %>%
  count(Answers,sort = TRUE) %>% ggplot() + geom_col(aes(x=Answers,y=n)) +
-  coord_flip()
+  coord_flip() + labs(title = "Count of Employees by Division")
 ```
 
 ## Count and Plot Number of Respondents by Question
@@ -52,7 +52,8 @@ dataset_longer %>% filter(Questions =="identify_which_division_you_work_in_respo
 ```{r}
 dataset_longer %>% filter(!grepl('question',Questions)) %>% count(Questions,sort = TRUE) %>%
   ggplot() + geom_col(aes(x=Questions,y=n)) + coord_flip() +
-  scale_x_discrete(guide = guide_axis(n.dodge = 2))
+  labs(title = "Count of Responses\n By Question")
+  
 ```
 
 
@@ -60,7 +61,6 @@ dataset_longer %>% filter(!grepl('question',Questions)) %>% count(Questions,sort
 dataset_longer %>% filter(Questions =="which_generation_are_you_apart_of_response") %>% count(Answers,sort = TRUE) %>%
   ggplot() + geom_col(aes(x=reorder(Answers,n),y=n)) +
   coord_flip() + labs(title = "Employee Count by Generation",
-                      x="Generation",y="Count of Employees") +
-  scale_x_discrete(guide = guide_axis(n.dodge = 2))
+                      x="Generation",y="Count of Employees") 
 ```
 

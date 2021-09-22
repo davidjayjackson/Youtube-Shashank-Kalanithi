@@ -15,7 +15,8 @@ pwd <- getwd() # sets the current working directory
 pwd
 ```
 ```{r}
-filepath <- paste(pwd, "/Data - Survey Monkey Output Edited.xlsx", sep="") # Make sure you fix this separator, it's a space by default
+filepath <- paste(pwd, "/Data - Survey Monkey Output Edited.xlsx", sep="") 
+# Make sure you fix this separator, it's a space by default
 filepath
 ```
 
